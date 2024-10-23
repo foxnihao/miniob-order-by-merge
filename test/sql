@@ -1,0 +1,257 @@
+# aggre, alias, subquery, ... test
+DROP TABLE tb1;
+DROP TABLE tb2;
+DROP TABLE tb3;
+DROP TABLE tb4;
+DROP TABLE tbe;
+DROP TABLE tbn;
+CREATE TABLE tb1(id INT NOT NULL, col1 CHAR(4) NOT NULL, feat1 FLOAT NOT NULL);
+CREATE TABLE tb2(id INT NOT NULL, col2 CHAR(4) NOT NULL, feat2 FLOAT NOT NULL);
+CREATE TABLE tb3(id INT NOT NULL, col3 CHAR(4) NOT NULL, feat3 FLOAT NULL);
+CREATE TABLE tb4(id INT NOT NULL, col4 CHAR(4) NULL, feat4 FLOAT NULL);
+CREATE TABLE tbe(id INT);
+INSERT INTO tb1 VALUES(94, '010', 46.6);
+INSERT INTO tb1 VALUES(60, '1000', 31.3);
+INSERT INTO tb1 VALUES(41, '10', 97.5);
+INSERT INTO tb2 VALUES(77, 'ABCD', 89);
+INSERT INTO tb2 VALUES(12, 'abcd', 18.0);
+INSERT INTO tb2 VALUES(60, '1234', 97.5);
+INSERT INTO tb3 VALUES(32, '-=@', 84);
+INSERT INTO tb3 VALUES(25, '.*_', NULL);
+INSERT INTO tb3 VALUES(53, '|\/', 20.5);
+INSERT INTO tb3 VALUES(60, '/\|', 5.02);
+INSERT INTO tb4 VALUES(1, 'efgh', 10);
+INSERT INTO tb4 VALUES(2, 'ijkl', 11);
+INSERT INTO tb4 VALUES(3, '3333', NULL);
+INSERT INTO tb4 VALUES(4, '4444', NULL);
+INSERT INTO tb4 VALUES(5, '5555', NULL);
+
+UPDATE tb1 SET id=2, col1=(select tb2.col2 from tb2 where tb2.id=1) WHERE id=60;
+
+select * from tb1, tb2 where tb1.id=tb2.id and 1=0;
+
+drop table t_group_by;
+create table t_group_by (id int not null, score float not null, name char(8) null);
+create table t_group_by_2 (id int not null, age int not null);
+insert into t_group_by VALUES (5, 1.63, '100000');
+insert into t_group_by VALUES (3, 3.09, 'T00000');
+insert into t_group_by VALUES (6, 4.97, 'T00000');
+insert into t_group_by values (1, 4.97, null);
+insert into t_group_by values (5, 3.83, null);
+insert into t_group_by values (3, 3.55, null);
+insert into t_group_by values (7, 3.09, null);
+select name, max(score) from t_group_by group by name;
+
+drop table t_group_by;
+create table t_group_by (id int not null, score float not null, name char(1) null);
+create table t_group_by_2 (id int not null, age int not null);
+insert into t_group_by VALUES (5, 1.63, '1');
+insert into t_group_by VALUES (3, 3.09, 'T');
+insert into t_group_by VALUES (6, 4.97, 'T');
+insert into t_group_by values (1, 4.97, null);
+insert into t_group_by values (5, 3.83, null);
+insert into t_group_by values (3, 3.55, null);
+insert into t_group_by values (7, 3.09, null);
+select name, max(score) from t_group_by group by name;
+
+# time
+select * from tb1, tb2, tb3, tb4 order by tb1.id, tb2.id, tb1.col1, tb2.col2, tb1.feat1, tb3.feat3, tb4.id, tb4.feat4, tb3.col3;
+
+# group by
+select id+1 as id1 from tb4 group by id1;
+select count(*) from tb4 where id = 5;
+select count(*) from tb4 group by feat4 having count(*) > 1;
+select id, feat4, avg(id), count(*), avg(feat4) from tb4 where id < 5 and feat4 is null group by id, feat4;
+select id, feat4, avg(id), count(*), avg(feat4) from tb4 where tb4.id < 5 and feat4 is null group by id, feat4;
+select max(id), max(feat4), avg(id), count(*), avg(feat4) from tb4 where id < 5 and feat4 is null group by id, feat4;
+select id, feat4, avg(id), count(*), avg(feat4) from tb4 where id < 5 group by id, feat4;
+select id, feat4, avg(id), count(*), avg(feat4) from tb4 group by id, feat4 having avg(id) < 5;
+select id, feat4, avg(id), count(*), avg(feat4) from tb4 where id > 2 group by id, feat4 having id <> 4;
+select avg(feat4) from tb4 group by feat4;
+select avg(id) from tb4 group by feat4;
+select feat4 + 1, count(*) from tb4 group by feat4 having feat4 > 10;
+select max(feat4 + 1), count(*) from tb4 group by feat4 having max(feat4) > 10;
+
+# create table select
+DROP TABLE tbn;
+create table tbn as select t1.id, t1.col1, t2.feat2 from tb1 t1, tb2 t2 where t1.id>=t2.id;
+create table tbn as select t1.id as col1, t1.feat1 - t2.feat2 as col2 from tb1 t1, tb2 t2 where t1.id>=t2.id;
+create table tbn as select t1.id as col1, t1.col1 - t2.feat2 as col2 from tb1 t1, tb2 t2 where t1.id>=t2.id;
+create table tbn select t1.id col1, t1.feat1 - t2.feat2 col2 from tb1 t1, tb2 t2 where t1.id>=t2.id;
+create table tbn as select 1=1;
+create table tbn(id int, age int) select id, -id from tb1;
+create table tbn as select t1.id, t1.feat1, t2.id from tb1 t1, tb2 t2 where t1.id=t2.id;
+desc tbn;
+select * from tbn;
+
+# join tables
+select * from tb1, tb2;
+select * from tb1 inner join tb2 on tb1.id = tb2.id;
+select * from tb1 inner join tb2 on tb1.id > tb2.id;
+select * from tb1 inner join tb2 on tb1.id = tb2.id inner join tbe on tb1.id=tbe.id;
+Select tb1.id from tb1 inner join tb2 on tb1.col1=tb2.col1;
+Select tb1.id, tb1.col1, tb2.feat2, tb3.col3 from tb1 inner join tb2 on tb1.id=tb2.id inner join tb3 on tb1.id=tb3.id;
+Select * from tb1 inner join tb2 on tb1.col1<tb2.feat2 and tb1.id=tb2.id;
+
+# update select
+select * from tb3;
+select * from tb1 where id in (select id from tb2 where tb1.id >= tb2.id);
+update tb3 set feat3 = (select feat1 from tb1 where id in (select id from tb2 where tb1.id >= tb2.id)) where feat3 is null;
+UPDATE tb1 SET col1=(select Update_table_not_exist.col1 from Update_table_not_exist where Update_table_not_exist.id=903) WHERE id=94;
+UPDATE tb2 SET col2=(select tb1.col1 from tb1 where tb1.id=41) WHERE id=77 and feat2=89;
+UPDATE tb2 SET col2=(select tb1.col1 from tb1 where tb1.id<>41) WHERE id=77 and feat2=89;
+UPDATE tb4 SET id=(SELECT tb3.feat3 from tb3 where tb3.id<>60) where id<>256;
+update tb1 set feat1=(select feat4 from tb4 where id>=2) where id=94;
+update tb1 set feat1=(select feat4 from tb4 where id=50000) where id=10000;
+
+# aggre
+select max(col1), min(col1) from tb1;
+select max(col2), min(col2) from tb2;
+select max(col3), min(col3) from tb3;
+select sum(tb1.id), max(tb2.col2), avg(tb3.feat3), count(*), count(tb3.feat3) from tb1, tb2, tb3;
+select avg(id) from tb1;
+select sum(col1) from tb1;
+select min(feat3) from tb3;
+select count() from tb1;
+
+# null
+select sum(feat3) from tb3 where id = 25;
+select * from tb3;
+UPDATE tb3 SET feat3=null where feat3 is null;
+UPDATE tb3 SET feat3=null where id=32;
+UPDATE tb3 SET id=null where feat3 is null;
+UPDATE tb3 SET feat3=(SELECT tb3.feat3 from tb3 where tb3.id=7) where id=53;
+UPDATE tb4 SET id=(SELECT tb3.feat3 from tb3 where tb3.id=60) where id=2;
+UPDATE tb3 SET feat3=(SELECT tb4.feat4 from tb4 where tb4.id>2) where id=2;
+
+# alias
+select t1.id as num from tb1 t1 where id in (select t2.id from tb2 t2 where num > t2.id);
+select t1.id as num from tb1 t1 where id in (select t2.id from tb2 t2 where t1.id > t2.id);
+select t1.id as num from tb1 t1 where id in (select t2.id from tb2 t2 where t1.id >= t2.id);
+select tb3.feat3 from tb3;
+select t.feat3 from tb3 t;
+select feat3 from tb3;
+select feat3 from tb3 t;
+select * as star from tb1;
+select t1.id as num, t1.feat1 as age from tb1 t1 where num > age;
+select t1.id as num, t1.feat1 as age from tb1 t1 where id > feat1;
+select t1.id as num, t1.feat1 as age from tb1 t1 order by num, age;
+
+# simple subquery
+select * from tb1 where col1 = (select tb2.col2 from tb2);
+select * from tb1 where col1 not in (select tb2.col2 from tb2);
+
+# complex subquery
+select * from tb1 where feat1 <> (select min(tb2.feat2) from tb2 where tb2.feat2 > tb1.feat1);
+select * from tb1 where feat1 <= (select min(tb2.feat2) from tb2 where tb2.feat2 >= tb1.feat1);
+select * from tb1 where feat1 > (select min(tb2.feat2) from tb2 where tb2.id in (select tb3.id from tb3 where tb3.col3 <> (select tb4.col4 from tb4 where tb4.id <> tb1.id)));
+
+# expression
+select * from tb1 where not 1 / 0 > 0;
+select 1 / 0 > 0;
+
+
+DROP TABLE tb1;
+CREATE TABLE tb1(id INT NULL);
+INSERT INTO tb1 VALUES(3);
+INSERT INTO tb1 VALUES(2);
+INSERT INTO tb1 VALUES(4);
+DROP TABLE tb2;
+CREATE TABLE tb1(name CHAR(4));
+INSERT INTO tb2 VALUES('abcd');
+INSERT INTO tb2 VALUES('a');
+INSERT INTO tb2 VALUES('ab');
+
+SELECT * FROM tb1;
+SELECT * FROM tb2;
+
+SELECT * FROM tb1 WHERE id IN (SELECT LENGTH(name) FROM tb2);
+SELECT * FROM tb1 WHERE id IN (3,4,5);
+SELECT * FROM tb1 WHERE id NOT IN (3,4,5);
+SELECT * FROM tb1 WHERE EXISTS (SELECT * FROM tb1 WHERE id <> 5);
+SELECT NOT 1 <> 1;
+SELECT * FROM tb1, tb2;
+SELECT tb1.* FROM tb1, tb2;
+SELECT tb2.* FROM tb1 AS tb2, tb2;
+SELECT *, LENGTH(name) AS name_len FROM tb2 ORDER BY -name_len DESC;
+SELECT * FROM tb1 WHERE id IN (SELECT * FROM tb1);
+
+
+DROP TABLE tb1;
+DROP TABLE tb2;
+DROP TABLE tb3;
+CREATE TABLE tb1(id int, col1 int, feat1 float);
+CREATE TABLE tb2(id int, col2 int, feat2 float);
+CREATE TABLE tb3(id int, col3 int, feat3 float);
+INSERT INTO tb1 VALUES (41, 99, 48.2);
+INSERT INTO tb1 VALUES (77, 94, 29);
+INSERT INTO tb2 VALUES (82, 40, 18.0);
+INSERT INTO tb2 VALUES (52, 30, 7.5);
+INSERT INTO tb2 VALUES (32, 95, 84);
+INSERT INTO tb3 VALUES (25, 23, 50);
+select count(*) as num, avg(t1.col1) score from tb1 t1, tb2 t2 where t1.id < t2.id;
+select * from tb1 t1, tb2 t2 where t1.id < t2.id;
+select * from tb1 where feat1 >= (select min(tb2.feat2) from tb2);
+select * from tb1 where col1 > (select max(tb2.col2) from tb2 where tb2.feat2 >= (select min(tb3.feat3) from tb3));
+
+
+DROP TABLE tb1;
+CREATE TABLE tb1(id INT NULL);
+INSERT INTO tb1 VALUES(3);
+INSERT INTO tb1 VALUES(2);
+INSERT INTO tb1 VALUES(4);
+INSERT INTO tb1 VALUES(NULL);
+INSERT INTO tb1 VALUES(5);
+INSERT INTO tb1 VALUES(7);
+INSERT INTO tb1 VALUES(6);
+
+SELECT * FROM tb1;
+SELECT id + 1 AS key FROM tb1 ORDER BY key;
+SELECT -id AS key FROM tb1 ORDER BY key;
+SELECT COUNT(*) FROM tb1;
+SELECT COUNT(id) FROM tb1;
+SELECT COUNT(*) AS cnt_total, COUNT(id) AS cnt_not_null, MAX(t.id) AS max_, MIN(t.id) AS min_, SUM(t.id) AS sum_, AVG(t.id) AS avg_ FROM tb1 AS t;
+
+CREATE TABLE date_table(id int, u_date date);
+CREATE INDEX index_id on date_table(u_date);
+INSERT INTO date_table VALUES (1,'2020-01-21');
+INSERT INTO date_table VALUES (2,'2020-10-21');
+INSERT INTO date_table VALUES (3,'2020-1-01');
+INSERT INTO date_table VALUES (4,'2017-2-29');
+
+SELECT * FROM date_table WHERE u_date='2017-2-29';
+
+
+DROP TABLE tb3;
+CREATE TABLE tb3(id INT, name CHAR(4), score FLOAT NULL);
+INSERT INTO tb3 VALUES(4, 'aca', 91.5);
+INSERT INTO tb3 VALUES(2, 'aab', 90.51);
+INSERT INTO tb3 VALUES(3, 'aca', 90.5);
+INSERT INTO tb3 VALUES(1, 'abc', 90.5);
+INSERT INTO tb3 VALUES(1, 'x', NULL);
+SELECT * FROM tb3;
+UPDATE tb3 SET score = 90.5, id = 4, name = 'aca' WHERE score IS NULL;
+UPDATE tb3 SET name = 'new', score = NULL WHERE id = 4;
+
+SELECT * FROM tb3;
+
+SELECT * FROM tb3 ORDER BY name, score, id;
+SELECT * FROM tb3 ORDER BY id, score, name;
+
+
+DROP TABLE tb1;
+DROP TABLE tb2;
+CREATE TABLE tb1(id int, col1 int, feat1 float);
+CREATE TABLE tb2(id int, col2 int, feat2 float);
+
+INSERT INTO tb1 VALUES (94, 56, 46.6);
+INSERT INTO tb1 VALUES (60, 90, 31.3);
+INSERT INTO tb1 VALUES (41, 99, 97.5);
+INSERT INTO tb2 VALUES (77, 94, 89);
+INSERT INTO tb2 VALUES (12, 40, 18.0);
+INSERT INTO tb2 VALUES (60, 30, 97.5);
+
+select * from tb1 where feat1 <> (select min(tb2.feat2) from tb2 where tb2.feat2 > tb1.feat1);
+select min(tb2.feat2) from tb1, tb2 where tb2.feat2 > tb1.feat1;
+select tb2.feat2, tb1.feat1 from tb1, tb2;
+select min(tb2.feat2) from tb2 where tb2.feat2 > 100;

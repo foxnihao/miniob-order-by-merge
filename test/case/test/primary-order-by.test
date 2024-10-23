@@ -1,0 +1,140 @@
+-- echo 1. create table
+create table t_order_by(id int, score float, name char);
+create table t_order_by_2(id int, age int);
+
+-- echo 2. insert records
+insert into t_order_by values(3, 1.0, 'a');
+insert into t_order_by values(1, 2.0, 'b');
+insert into t_order_by values(4, 3.0, 'c');
+insert into t_order_by values(3, 2.0, 'c');
+insert into t_order_by values(3, 4.0, 'c');
+insert into t_order_by values(3, 3.0, 'd');
+insert into t_order_by values(3, 2.0, 'f');
+
+insert into t_order_by_2 values(1, 10);
+insert into t_order_by_2 values(2, 20);
+insert into t_order_by_2 values(3, 10);
+insert into t_order_by_2 values(3, 20);
+insert into t_order_by_2 values(3, 40);
+insert into t_order_by_2 values(4, 20);
+
+-- echo 3. primary order by
+-- sort select * from t_order_by order by id;
+
+-- sort select * from t_order_by order by id asc;
+
+-- sort select * from t_order_by order by id desc;
+
+-- sort select * from t_order_by order by score desc;
+
+-- sort select * from t_order_by order by name desc;
+
+-- echo 4. order by more than one fields
+select * from t_order_by order by id, score, name;
+
+select * from t_order_by order by id desc, score asc, name desc;
+
+-- echo 5. order by associate with where condition
+select * from t_order_by where id=3 and name>='a' order by score desc, name;
+
+-- echo 6. multi-table order by
+select * from t_order_by,t_order_by_2 order by t_order_by.id,t_order_by.score,t_order_by.name,t_order_by_2.id,t_order_by_2.age;
+
+select * from t_order_by, t_order_by_2 where t_order_by.id=t_order_by_2.id order by t_order_by.score desc, t_order_by_2.age asc, t_order_by.id asc, t_order_by.name;
+
+
+
+CREATE TABLE big_order_by_0(id int, num int, price float, addr char(10), birthday date);
+CREATE TABLE big_order_by_1(id int, num int, price float, addr char(10), birthday date);
+CREATE TABLE big_order_by_2(id int, num int, price float, addr char(10), birthday date);
+CREATE TABLE big_order_by_3(id int, num int, price float, addr char(10), birthday date);
+
+insert into big_order_by_0 values(1, 515, 959.92, 'WMXU', '2021-11-04');
+insert into big_order_by_0 VALUES (2, 471, 505.61, 'SINN', '2022-07-02');
+insert into big_order_by_0 VALUES (3, 808, 128.95, 'DSA', '2020-01-21');
+insert into big_order_by_0 VALUES (4, 702, 905.53, '32CWF', '2021-08-23');
+insert into big_order_by_0 VALUES (5, 848, 663.94, 'AEDS', '2008-12-03');
+insert into big_order_by_0 VALUES (6, 936, 880.22, 'DRWGAC', '2021-02-20');
+insert into big_order_by_0 VALUES (7, 64, 192.17, 'ASFERW', '2001-06-22');
+insert into big_order_by_0 VALUES (8, 368, 538.57, '4SDA', '2000-06-30');
+insert into big_order_by_0 VALUES (9, 573, 64.61, '3DUC8', '2021-03-15');
+insert into big_order_by_0 VALUES (10, 188, 194.43, '3CMMXQ', '2014-08-09');
+insert into big_order_by_0 VALUES (11, 516, 171.59, 'Q3XMXQ', '2008-06-27');
+insert into big_order_by_0 VALUES (12, 522, 33.75, 'QX3XQ', '2018-05-11');
+insert into big_order_by_0 VALUES (13, 252, 848.83, 'ACDDA2', '2013-03-20');
+insert into big_order_by_0 VALUES (14, 878, 129.16, 'Q3EDQ', '2008-01-04');
+insert into big_order_by_0 VALUES (15, 939, 349.63, 'Q2EDDAS', '2001-11-19');
+insert into big_order_by_0 VALUES (16, 84, 17.26, 'FADW2', '2018-07-07');
+insert into big_order_by_0 VALUES (17, 261, 554.34, 'W2Q2DS', '2018-01-24');
+insert into big_order_by_0 VALUES (18, 668, 964.26, 'WDWQD', '2020-06-13');
+insert into big_order_by_0 VALUES (19, 477, 806.28, 'WQ2Q', '2009-12-03');
+insert into big_order_by_0 VALUES (20, 148, 858.85, '3QE3G5', '2017-01-28');
+
+
+insert into big_order_by_1 VALUES (1, 504, 520.72, '3DJQNX', '2017-04-05');
+insert into big_order_by_1 VALUES (2, 118, 295.16, '3CQRE3QX', '2001-09-17');
+insert into big_order_by_1 VALUES (3, 962, 471.35, 'R3WDGR', '2008-12-05');
+insert into big_order_by_1 VALUES (4, 410, 734.93, 'F5G5ECF', '2001-02-10');
+insert into big_order_by_1 VALUES (5, 832, 661.83, 'VWTCW', '2010-10-18');
+insert into big_order_by_1 VALUES (6, 610, 816.78, '4WCR3C', '2012-01-21');
+insert into big_order_by_1 VALUES (7, 485, 287.44, '4VWC', '2019-11-24');
+insert into big_order_by_1 VALUES (8, 86, 84.45, 'W4VRCW', '2012-07-17');
+insert into big_order_by_1 VALUES (9, 314, 275.81, 'RC45V', '2008-03-13');
+insert into big_order_by_1 VALUES (10, 98, 520.03, 'GE', '2014-12-30');
+insert into big_order_by_1 VALUES (11, 569, 924.48, '4WR', '2023-05-22');
+insert into big_order_by_1 VALUES (12, 804, 864.94, '4WR4W', '2000-07-29');
+insert into big_order_by_1 VALUES (13, 105, 619.71, 'X1Z2Z1', '2015-01-19');
+insert into big_order_by_1 VALUES (14, 974, 594.19, 'E3XQ', '2015-01-13');
+insert into big_order_by_1 VALUES (15, 279, 660.23, 'QX32', '2013-02-22');
+insert into big_order_by_1 VALUES (16, 671, 789.36, 'X23', '2010-02-11');
+insert into big_order_by_1 VALUES (17, 940, 313.18, 'X23E', '2011-08-08');
+insert into big_order_by_1 VALUES (18, 987, 547.84, 'N86B', '2008-12-23');
+insert into big_order_by_1 VALUES (19, 593, 75.5, '3VCT3', '2014-08-06');
+insert into big_order_by_1 VALUES (20, 908, 128.5, '3CCT', '2019-03-27');
+
+INSERT INTO big_order_by_2 VALUES (1, 363, 561.31, 'W3X43', '2015-08-18');
+INSERT INTO big_order_by_2 VALUES (2, 502, 294.64, 'GCRG5', '2011-01-05');
+INSERT INTO big_order_by_2 VALUES (3, 791, 125.65, 'B5U6B', '2014-04-18');
+INSERT INTO big_order_by_2 VALUES (4, 845, 768.08, 'B5C3X4', '2012-02-11');
+INSERT INTO big_order_by_2 VALUES (5, 178, 847.83, 'C3X2X2', '2015-04-03');
+INSERT INTO big_order_by_2 VALUES (6, 252, 465.67, 'MX3Q9', '2009-01-13');
+INSERT INTO big_order_by_2 VALUES (7, 195, 151.36, '3MXQJME', '2014-04-11');
+INSERT INTO big_order_by_2 VALUES (8, 806, 825.28, '3CRXT', '2003-08-22');
+INSERT INTO big_order_by_2 VALUES (9, 365, 113.6, '54V4', '2013-01-17');
+INSERT INTO big_order_by_2 VALUES (10, 496, 561.95, 'C3X2Z', '2009-11-13');
+INSERT INTO big_order_by_2 VALUES (11, 452, 942.97, 'R4XT', '2022-12-24');
+INSERT INTO big_order_by_2 VALUES (12, 244, 137.81, 'N6U6', '2001-12-17');
+INSERT INTO big_order_by_2 VALUES (13, 654, 777.86, 'X4WCRC', '2009-07-30');
+INSERT INTO big_order_by_2 VALUES (14, 333, 875.69, 'V5ET', '2019-10-10');
+INSERT INTO big_order_by_2 VALUES (15, 470, 343.03, 'RHYJH', '2008-01-21');
+INSERT INTO big_order_by_2 VALUES (16, 571, 778.61, 'E5C', '2002-09-19');
+INSERT INTO big_order_by_2 VALUES (17, 802, 250.98, 'C4W', '2018-12-15');
+INSERT INTO big_order_by_2 VALUES (18, 482, 957.61, 'F', '2022-12-09');
+INSERT INTO big_order_by_2 VALUES (19, 113, 162.93, 'G54V', '2000-08-07');
+INSERT INTO big_order_by_2 VALUES (20, 674, 810.9, 'V5E4X3', '2006-10-19');
+
+INSERT INTO big_order_by_3 VALUES (1, 703, 962.9, 'ESXF', '2012-09-17');
+INSERT INTO big_order_by_3 VALUES (2, 202, 311.33, 'WXW', '2003-01-28');
+INSERT INTO big_order_by_3 VALUES (3, 291, 676.21, 'XW4XQ', '2023-04-09');
+INSERT INTO big_order_by_3 VALUES (4, 878, 848.35, '4WXR4', '2019-11-01');
+INSERT INTO big_order_by_3 VALUES (5, 339, 125.91, 'WE3QX', '2013-03-06');
+INSERT INTO big_order_by_3 VALUES (6, 561, 580.08, 'CE5EX', '2000-03-24');
+INSERT INTO big_order_by_3 VALUES (7, 318, 418.47, 'C5G4WX', '2004-08-25');
+INSERT INTO big_order_by_3 VALUES (8, 491, 754.91, 'WZ3R2', '2012-06-26');
+INSERT INTO big_order_by_3 VALUES (9, 278, 652.44, 'C4WX', '2016-10-19');
+INSERT INTO big_order_by_3 VALUES (10, 34, 81.78, '4CR54Y', '2013-08-29');
+INSERT INTO big_order_by_3 VALUES (11, 65, 697.3, '5C45', '2022-04-16');
+INSERT INTO big_order_by_3 VALUES (12, 461, 414.25, '4VC5', '2007-11-07');
+INSERT INTO big_order_by_3 VALUES (13, 151, 761.67, 'C453C', '2007-06-12');
+INSERT INTO big_order_by_3 VALUES (14, 113, 260.01, 'QX3R', '2009-12-10');
+INSERT INTO big_order_by_3 VALUES (15, 57, 489.52, 'C4C', '2013-05-30');
+INSERT INTO big_order_by_3 VALUES (16, 590, 206.4, '6VU5', '2019-01-07');
+INSERT INTO big_order_by_3 VALUES (17, 964, 820.99, 'V64YV6', '2011-09-12');
+INSERT INTO big_order_by_3 VALUES (18, 876, 944.86, 'V64Y4W', '2004-06-17');
+INSERT INTO big_order_by_3 VALUES (19, 869, 766.73, 'VW4', '2008-12-10');
+INSERT INTO big_order_by_3 VALUES (20, 368, 69.21, 'V4WVW4', '2005-03-16');
+
+
+select * from big_order_by_0, big_order_by_1,big_order_by_2, big_order_by_3 order by big_order_by_0.price,big_order_by_2.addr, big_order_by_1.birthday, big_order_by_3.num, big_order_by_3.addr, big_order_by_3.id,big_order_by_2.birthday, big_order_by_1.num, big_order_by_0.id,big_order_by_0.birthday,big_order_by_1.addr,big_order_by_2.num,big_order_by_3.birthday;
+
+...
